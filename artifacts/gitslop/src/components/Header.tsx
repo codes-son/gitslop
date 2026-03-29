@@ -9,7 +9,7 @@ export function Header() {
           <img
             src={`${import.meta.env.BASE_URL}logo.png`}
             alt="GitSlop"
-            className="w-9 h-9 object-contain group-hover:scale-110 transition-transform drop-shadow-lg"
+            className="w-11 h-11 object-contain group-hover:scale-110 transition-transform"
           />
           <span className="font-bold text-xl tracking-tight text-white group-hover:text-primary transition-colors">
             Git<span className="text-zinc-400">Slop</span>
