@@ -51,7 +51,7 @@ export function Hero() {
               Install App
             </a>
             <a
-              href="https://github.com/codes-son/gitslop/discussions/2"
+              href="https://github.com/codes-son/gitslop/discussions/2#new_comment_field"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-zinc-300 font-semibold text-sm hover:bg-white/10 hover:text-white active:scale-95 transition-all"

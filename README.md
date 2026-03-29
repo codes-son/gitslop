@@ -4,7 +4,7 @@
 
 **🌐 Live gallery:** [codes-son.github.io/gitslop](https://codes-son.github.io/gitslop/)  
 **📦 Install the bot:** [github.com/apps/gitslopbot](https://github.com/apps/gitslopbot)  
-**🛝 Community:** [gitslop/discussions/2](https://github.com/codes-son/gitslop/discussions/2)
+**🛝 Community:** [gitslop/discussions/2](https://github.com/codes-son/gitslop/discussions/2#new_comment_field)
 
 ---
 
