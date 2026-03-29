@@ -9,9 +9,13 @@ export function useMemesGallery(limit = 50, offset = 0) {
     { limit, offset },
     {
       query: {
-        queryKey: [],
-        refetchInterval: 30000,
-        refetchOnWindowFocus: true,
+        queryKey: ["memes", limit, offset],
+        staleTime: 60_000,
+        gcTime: 5 * 60_000,
+        refetchInterval: 60_000,
+        refetchOnWindowFocus: false,
+        retry: 3,
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10_000),
       }
     }
   );
