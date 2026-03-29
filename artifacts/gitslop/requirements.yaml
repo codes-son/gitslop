@@ -1,0 +1,14 @@
+packages:
+  "framer-motion": "For stunning entry animations and scroll reveals in the meme gallery"
+  "date-fns": "For formatting meme creation dates relative to now"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For merging Tailwind CSS classes safely"
+
+images:
+  - path: "artifacts/gitslop/public/images/hero-bg.png"
+    description: "Dark, cyberpunk abstract mesh gradient with electric cyan and deep purple accents, very subtle, soft light leaks, perfect for a modern developer tool landing page background"
+    aspect_ratio: "16:9"
+
+notes:
+  - "The app fetches meme data from /api/memes using the @workspace/api-client-react hook"
+  - "Dark mode developer aesthetic is applied globally"
