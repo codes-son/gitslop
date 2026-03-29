@@ -58,28 +58,35 @@ export async function getInstallationToken(
 
 export async function postDiscussionComment(
   token: string,
-  owner: string,
-  repo: string,
-  discussionNumber: number,
+  discussionNodeId: string,
   body: string,
 ): Promise<void> {
-  const url = `${GITHUB_API_BASE}/repos/${owner}/${repo}/discussions/${discussionNumber}/comments`;
+  const query = `
+    mutation AddDiscussionComment($discussionId: ID!, $body: String!) {
+      addDiscussionComment(input: { discussionId: $discussionId, body: $body }) {
+        comment { id }
+      }
+    }
+  `;
 
-  const response = await fetch(url, {
+  const response = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
       "User-Agent": "GitSlop-Bot/1.0",
     },
-    body: JSON.stringify({ body }),
+    body: JSON.stringify({ query, variables: { discussionId: discussionNodeId, body } }),
   });
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`GitHub API error: ${response.status} ${text}`);
+    throw new Error(`GitHub GraphQL error: ${response.status} ${text}`);
+  }
+
+  const result = await response.json() as { errors?: { message: string }[] };
+  if (result.errors?.length) {
+    throw new Error(`GitHub GraphQL error: ${result.errors.map(e => e.message).join(", ")}`);
   }
 }
 

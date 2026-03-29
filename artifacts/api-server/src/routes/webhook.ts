@@ -161,6 +161,7 @@ router.post(
     const discussion = payload.discussion as
       | Record<string, unknown>
       | undefined;
+    const discussionNodeId = discussion?.node_id as string | undefined;
     const issueNumber =
       (issue?.number as number | undefined) ??
       (pullRequest?.number as number | undefined) ??
@@ -200,11 +201,14 @@ router.post(
 
     try {
       if (isDiscussion) {
+        if (!discussionNodeId) {
+          req.log.error("Missing discussion node_id in payload");
+          res.status(400).json({ error: "Missing discussion node_id" });
+          return;
+        }
         await postDiscussionComment(
           installationToken,
-          owner,
-          repo,
-          issueNumber,
+          discussionNodeId,
           replyBody,
         );
       } else {
