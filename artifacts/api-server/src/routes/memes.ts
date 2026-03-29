@@ -11,7 +11,7 @@ router.get("/memes", async (req, res) => {
   const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 100) : 50;
   const offset = Number.isFinite(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
 
-  const BLOCKED_OWNERS = ["buildish-arc", "codes-son"];
+  const BLOCKED_OWNERS = ["buildish-arc"];
   const ownerFilter = notInArray(memePostsTable.owner, BLOCKED_OWNERS);
 
   const [memes, countResult] = await Promise.all([
