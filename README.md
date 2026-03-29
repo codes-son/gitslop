@@ -39,22 +39,21 @@ The bot automatically replies with a context-aware reaction GIF sourced from Gip
 ## How It Works
 
 ```mermaid
-sequenceDiagram
-    actor User
-    participant GitHub
-    participant GitSlop Bot
-    participant OpenAI
-    participant Giphy
+flowchart TD
+    A(["👤 User mentions @gitslopbot"]) --> B["GitHub receives comment"]
+    B --> C{"Contains @gitslopbot?"}
+    C -- No --> D(["🚫 Ignored"])
+    C -- Yes --> E["Webhook sent to GitSlop"]
+    E --> F["OpenAI refines search query"]
+    F --> G["Giphy returns best matching GIF"]
+    G --> H["Bot posts GIF reply on GitHub"]
+    H --> I(["💬 User sees GIF response"])
+    H --> J[("🗄️ Saved to public gallery")]
 
-    User->>GitHub: Comments "@gitslopbot <phrase>"
-    GitHub->>GitSlop Bot: Sends webhook event
-    GitSlop Bot->>OpenAI: Converts phrase to optimal search query
-    OpenAI-->>GitSlop Bot: Returns refined search terms
-    GitSlop Bot->>Giphy: Searches for matching GIF
-    Giphy-->>GitSlop Bot: Returns GIF URL
-    GitSlop Bot->>GitHub: Posts reply with GIF
-    GitHub-->>User: Notification — bot replied!
-    GitSlop Bot->>GitSlop Bot: Saves meme to gallery
+    style A fill:#1f6feb,color:#fff,stroke:none
+    style I fill:#238636,color:#fff,stroke:none
+    style D fill:#b62324,color:#fff,stroke:none
+    style J fill:#6e40c9,color:#fff,stroke:none
 ```
 
 ---
@@ -132,4 +131,26 @@ pnpm --filter @workspace/db run push
 
 ## License
 
-MIT
+```
+MIT License
+
+Copyright (c) 2026 codes-son
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
