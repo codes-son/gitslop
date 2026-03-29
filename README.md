@@ -1,5 +1,7 @@
 # GitSlop
 
+**🌐 Live gallery: [codes-son.github.io/gitslop](https://codes-son.github.io/gitslop/)**
+
 A GitHub App bot that replies to `@gitslopbot <keyword>` mentions in issue, PR, and discussion comments with a relevant GIF meme.
 
 ## How it works
@@ -17,7 +19,7 @@ The bot replies with a matching GIF.
 
 ## Gallery
 
-All memes posted by the bot are displayed on the public gallery at the homepage.
+All memes posted by the bot are displayed on the public gallery at **[codes-son.github.io/gitslop](https://codes-son.github.io/gitslop/)**.
 
 ## Stack
 
