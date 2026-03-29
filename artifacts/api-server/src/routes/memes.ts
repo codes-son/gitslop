@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, memePostsTable } from "@workspace/db";
-import { desc } from "drizzle-orm";
+import { desc, notInArray } from "drizzle-orm";
 import { ListMemesResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -11,14 +11,18 @@ router.get("/memes", async (req, res) => {
   const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 100) : 50;
   const offset = Number.isFinite(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
 
+  const BLOCKED_OWNERS = ["buildish-arc"];
+  const ownerFilter = notInArray(memePostsTable.owner, BLOCKED_OWNERS);
+
   const [memes, countResult] = await Promise.all([
     db
       .select()
       .from(memePostsTable)
+      .where(ownerFilter)
       .orderBy(desc(memePostsTable.createdAt))
       .limit(limit)
       .offset(offset),
-    db.$count(memePostsTable),
+    db.$count(memePostsTable, ownerFilter),
   ]);
 
   const data = ListMemesResponse.parse({
