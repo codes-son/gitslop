@@ -43,7 +43,7 @@ export function Hero() {
             <div className="glass-panel px-5 py-4 sm:px-8 sm:py-5 rounded-2xl font-mono text-sm sm:text-base text-left flex items-start gap-4">
               <span className="text-zinc-600 select-none hidden sm:block">1</span>
               <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center text-zinc-300">
-                <span className="text-[#a855f7] font-semibold">@gitslop</span>
+                <span className="text-[#a855f7] font-semibold">@gitslopbot</span>
                 <span className="text-[#22d3ee]">this code is absolute garbage</span>
               </div>
             </div>

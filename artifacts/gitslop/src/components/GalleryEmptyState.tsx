@@ -13,7 +13,7 @@ export function GalleryEmptyState() {
       </div>
       <h3 className="text-2xl font-bold text-white mb-3">It's quiet in here...</h3>
       <p className="text-zinc-400 max-w-md mx-auto leading-relaxed">
-        The GitSlop bot hasn't dropped any memes yet. Mention <code className="text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono text-sm">@gitslop</code> in any configured GitHub repository to populate this gallery.
+        The GitSlop bot hasn't dropped any memes yet. Mention <code className="text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono text-sm">@gitslopbot</code> in any configured GitHub repository to populate this gallery.
       </p>
     </motion.div>
   );
