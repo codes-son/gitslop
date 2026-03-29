@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { TerminalSquare } from "lucide-react";
+import { TerminalSquare, Github, Play } from "lucide-react";
 
 export function Hero() {
   return (
@@ -34,10 +34,37 @@ export function Hero() {
             GitSlop is a GitHub App that replies to issue and PR comments with context-aware memes. Because debugging is too depressing without them.
           </p>
 
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12"
+          >
+            <a
+              href="https://github.com/apps/gitslop-generator"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all shadow-lg shadow-primary/20"
+            >
+              <Github className="w-4 h-4" />
+              Install App
+            </a>
+            <a
+              href="https://github.com/codes-son/gitslop/issues/1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-zinc-300 font-semibold text-sm hover:bg-white/10 hover:text-white active:scale-95 transition-all"
+            >
+              <Play className="w-4 h-4" />
+              Bot Playground
+            </a>
+          </motion.div>
+
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
             className="inline-flex flex-col items-center"
           >
             <div className="glass-panel px-5 py-4 sm:px-8 sm:py-5 rounded-2xl font-mono text-sm sm:text-base text-left flex items-start gap-4">
