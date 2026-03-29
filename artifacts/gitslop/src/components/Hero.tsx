@@ -42,7 +42,7 @@ export function Hero() {
             className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12"
           >
             <a
-              href="https://github.com/apps/gitslop-generator"
+              href="https://github.com/apps/gitslopbot"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-black font-semibold text-sm hover:bg-primary/90 active:scale-95 transition-all shadow-lg shadow-primary/20"
