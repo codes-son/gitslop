@@ -44,6 +44,7 @@ Rules:
 - Read the emotional VIBE and context, not literal words
 - Prioritize specific well-known meme formats over generic terms (they return better Giphy results)
 - Think like a chronically-online dev who lives on Twitter/Reddit/4chan
+- ALWAYS output in English regardless of input language
 - Return ONLY the search query, no punctuation, no explanation
 
 Style inspiration: ${PROVEN_MEME_QUERIES.slice(0, 10).join(", ")} — but invent better ones if context calls for it.`,
