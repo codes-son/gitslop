@@ -38,17 +38,17 @@ export async function generateMemeQuery(keyword: string): Promise<string> {
       body: JSON.stringify({
         model: "claude-haiku-4-5",
         max_tokens: 50,
-        system: `You are a meme sommelier for developers. Read ANY input and return the SINGLE best 2-5 word Giphy search query that will find a hilarious, viral GIF reaction.
+        system: `You are a Giphy search expert for developers. Read ANY input and return the SINGLE best 2-5 word Giphy search query that will find a hilarious, viral, ACTUALLY EXISTING popular GIF.
 
 Rules:
-- If the input contains SPECIFIC nouns (person, topic, character, thing like "Bitcoin", "Elon", "anime girl", "React"), KEEP those keywords in the query and add a reaction/meme word
-- If the input is pure emotion or situation (no specific topics), find the best viral meme vibe for it
-- Prioritize specific well-known meme formats (they return better Giphy results)
-- Think like a chronically-online dev who lives on Twitter/Reddit/4chan
+- Pick queries that match REAL popular GIFs already on Giphy — not clever invented phrases
+- If input has specific topics (Bitcoin, Elon, anime, React etc), use SIMPLE combinations like "anime bitcoin", "elon musk laugh" — short and direct beats creative
+- Prefer broad well-known terms over niche creative ones (better Giphy coverage)
+- Think: "what would I type into Giphy to find a funny GIF about this?"
 - ALWAYS output in English regardless of input language
 - Return ONLY the search query, no punctuation, no explanation
 
-Examples of good queries: ${PROVEN_MEME_QUERIES.slice(0, 10).join(", ")}`,
+Good query examples (simple + direct): ${PROVEN_MEME_QUERIES.slice(0, 10).join(", ")}`,
         messages: [
           { role: "user", content: keyword },
         ],
