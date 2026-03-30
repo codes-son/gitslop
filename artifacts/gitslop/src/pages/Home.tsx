@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { MemeCard } from "@/components/MemeCard";
@@ -107,6 +107,7 @@ function EmptyState({ tab }: { tab: Tab }) {
 export function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("gifs");
   const [page, setPage] = useState(1);
+  const sectionRef = useRef<HTMLElement>(null);
 
   const { data, isLoading, error } = useMemesGallery(1000, 0);
 
@@ -123,10 +124,14 @@ export function Home() {
   const totalPages = Math.max(1, Math.ceil(items.length / perPage));
   const paged = items.slice((page - 1) * perPage, page * perPage);
 
+  const scrollToGallery = () => {
+    sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
     setPage(1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToGallery();
   };
 
   const currentTab = TABS.find((t) => t.id === activeTab)!;
@@ -190,14 +195,14 @@ export function Home() {
         )}
 
         {!error && (
-          <section className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-32 pt-8">
+          <section ref={sectionRef} className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-32 pt-8">
             {isLoading ? (
               <GallerySkeleton />
             ) : items.length === 0 ? (
               <EmptyState tab={activeTab} />
             ) : (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
                   {paged.map((meme, idx) =>
                     activeTab === "gifs" ? (
                       <GifCard key={meme.id} meme={meme} index={idx} />
@@ -211,14 +216,8 @@ export function Home() {
                 <Pagination
                   page={page}
                   totalPages={totalPages}
-                  onPrev={() => {
-                    setPage((p) => Math.max(1, p - 1));
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                  onNext={() => {
-                    setPage((p) => Math.min(totalPages, p + 1));
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
+                  onPrev={() => { setPage((p) => Math.max(1, p - 1)); scrollToGallery(); }}
+                  onNext={() => { setPage((p) => Math.min(totalPages, p + 1)); scrollToGallery(); }}
                   accentColor={currentTab.accent}
                 />
               </>
