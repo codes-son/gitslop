@@ -45,7 +45,6 @@ function composeDallePrompt(c: MemeConceptJson): string {
     `3D Pixar-style cartoon meme: expressive human face ${hairDesc} on ${body} humanoid body, ${activity}.`,
     `Background: ${background}.`,
     `Large bold white bubble letters at the top read "${memeText}".`,
-    `Small text "github.com/apps/gitslopbot" bottom-right corner.`,
     `Vivid saturated colors, cinematic studio lighting, ultra detailed, square format.`,
   ].join(" ");
 }
@@ -81,7 +80,7 @@ Schema (strict char limits):
 }
 
 Rules:
-- body: pick a funny/unique body — can be an animal (cat, frog, raccoon, capybara, penguin) OR a plant/vegetable/fruit/tree (broccoli, carrot, strawberry, banana, cactus, pineapple, oak tree, chili pepper). Mix it up, avoid repetition.
+- body: pick any funny/unique body — animal (cat, dog, frog, raccoon, capybara, penguin, owl, hamster, axolotl, red panda, duck, crab, shark, bear, rabbit) OR plant/vegetable/fruit/tree (broccoli, carrot, strawberry, banana, cactus, pineapple, oak tree, chili pepper, sunflower, mushroom, corn, eggplant, avocado, watermelon, cherry blossom tree). Be creative and surprising, avoid using the same body twice in a row.
 - gender: if user mentions girl/woman/cewek/wanita → "girl"; man/boy/cowok/pria → "man"; otherwise "neutral"
 - activity: humanoid pose, action matches user context
 - background: chaotic, colorful, absurd — space disco, offices exploding, rainbow chaos, underwater rave, etc

@@ -57,6 +57,13 @@ export function MemeCard({ meme, index }: MemeCardProps) {
           </div>
         </div>
 
+        {/* Watermark — always correct, bottom-right */}
+        <div className="absolute bottom-2 right-2 z-30 pointer-events-none">
+          <span className="text-[9px] font-mono text-white/50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] tracking-tight select-none">
+            github.com/apps/gitslopbot
+          </span>
+        </div>
+
         {/* Hover Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
