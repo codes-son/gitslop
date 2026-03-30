@@ -30,7 +30,7 @@ function composeDallePrompt(c: MemeConceptJson): string {
     `Background: ${background}.`,
     `Large bold white bubble letters at the top read "${memeText}".`,
     `Small text "github.com/apps/gitslopbot" bottom-right corner.`,
-    `Landscape 3:2, vivid saturated colors, cinematic studio lighting, ultra detailed.`,
+    `Vivid saturated colors, cinematic studio lighting, ultra detailed, square format.`,
   ].join(" ");
 }
 
@@ -114,12 +114,10 @@ export async function generateMemeImage(keyword: string): Promise<{ imageBase64:
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "dall-e-3",
+      model: "gpt-image-1",
       prompt: safePrompt,
       n: 1,
-      size: "1792x1024",      // closest landscape to 3:2
-      response_format: "b64_json",
-      quality: "standard",
+      size: "1024x1024",
     }),
   });
 

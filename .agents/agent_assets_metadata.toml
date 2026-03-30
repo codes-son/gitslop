@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "yExZCIDQbqGfURVURWhgD"
+uri = "file://screenshots/meme-test.png"
+type = "image"
+title = "Test: anime girl bitcoin → gpt-image-1"
