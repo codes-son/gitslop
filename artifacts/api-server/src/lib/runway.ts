@@ -5,8 +5,8 @@ const MAX_POLL_ATTEMPTS  = 36; // 3 minutes max
 
 // Runway promptText hard limit: 512 chars
 const RUNWAY_PROMPT_LIMIT = 512;
-const RUNWAY_MOTION_SUFFIX = " — Pixar 3D cartoon animation, smooth expressive movement, dynamic camera, vivid colors, cinematic";
-// suffix is 93 chars, leaving 419 chars for the keyword context
+const RUNWAY_MOTION_SUFFIX = " — character bouncing and gesturing wildly, exaggerated arm flailing, head bopping, expressive face reacting. Camera slowly dollies in with slight wobble, then pulls back. Background elements spinning and pulsing. Smooth Pixar 3D animation, 24fps.";
+// suffix is 249 chars, leaving 263 chars for the keyword context
 
 interface RunwayTaskResponse {
   id: string;
