@@ -68,6 +68,8 @@ components:
           type: string
         videoUrl:
           type: string
+        imageUrl:
+          type: string
         imagePrompt:
           type: string
         githubUrl:

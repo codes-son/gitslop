@@ -10,6 +10,7 @@ export interface MemePost {
   id: number;
   keyword: string;
   videoUrl: string;
+  imageUrl?: string;
   imagePrompt?: string;
   githubUrl: string;
   owner: string;

@@ -178,7 +178,7 @@ async function processMemeInBackground(opts: {
     // Still save to DB even if we can't post
     if (videoUrl) {
       try {
-        await db.insert(memePostsTable).values({ keyword, videoUrl, imagePrompt, githubUrl, owner, repo, issueNumber });
+        await db.insert(memePostsTable).values({ keyword, videoUrl, imageUrl: imageUrl || null, imagePrompt, githubUrl, owner, repo, issueNumber });
       } catch (dbErr) { logger.warn({ dbErr }, "Failed to save meme to DB"); }
     }
     return;
@@ -216,6 +216,7 @@ async function processMemeInBackground(opts: {
       await db.insert(memePostsTable).values({
         keyword,
         videoUrl,
+        imageUrl: imageUrl || null,
         imagePrompt,
         githubUrl,
         owner,

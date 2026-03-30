@@ -33,6 +33,7 @@ export const ListMemesResponse = zod.object({
       id: zod.number(),
       keyword: zod.string(),
       videoUrl: zod.string(),
+      imageUrl: zod.string().optional(),
       imagePrompt: zod.string().optional(),
       githubUrl: zod.string(),
       owner: zod.string(),

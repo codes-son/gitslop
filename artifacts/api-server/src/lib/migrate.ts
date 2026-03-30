@@ -23,6 +23,16 @@ export async function runStartupMigrations(): Promise<void> {
       await client.query(`ALTER TABLE meme_posts ADD COLUMN image_prompt TEXT`);
       logger.info("Migration: added image_prompt column");
     }
+
+    // Check and add image_url column
+    const { rows: imageUrlCheck } = await client.query(`
+      SELECT column_name FROM information_schema.columns
+      WHERE table_name = 'meme_posts' AND column_name = 'image_url'
+    `);
+    if (imageUrlCheck.length === 0) {
+      await client.query(`ALTER TABLE meme_posts ADD COLUMN image_url TEXT`);
+      logger.info("Migration: added image_url column");
+    }
   } catch (err) {
     logger.error({ err }, "Startup migration failed");
     throw err;

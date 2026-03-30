@@ -30,6 +30,7 @@ router.get("/memes", async (req, res) => {
       id: m.id,
       keyword: m.keyword,
       videoUrl: m.videoUrl,
+      imageUrl: m.imageUrl ?? undefined,
       imagePrompt: m.imagePrompt ?? undefined,
       githubUrl: m.githubUrl,
       owner: m.owner,

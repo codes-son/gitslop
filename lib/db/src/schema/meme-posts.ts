@@ -4,6 +4,7 @@ export const memePostsTable = pgTable("meme_posts", {
   id: serial("id").primaryKey(),
   keyword: text("keyword").notNull(),
   videoUrl: text("video_url").notNull(),
+  imageUrl: text("image_url"),
   imagePrompt: text("image_prompt"),
   githubUrl: text("github_url").notNull(),
   owner: text("owner").notNull(),
