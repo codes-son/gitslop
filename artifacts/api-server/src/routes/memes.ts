@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, memePostsTable } from "@workspace/db";
-import { desc, notInArray } from "drizzle-orm";
+import { desc, eq, notInArray } from "drizzle-orm";
 import { ListMemesResponse } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -42,6 +42,38 @@ router.get("/memes", async (req, res) => {
   });
 
   res.json(data);
+});
+
+router.get("/memes/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ error: "Invalid meme ID" });
+    return;
+  }
+
+  const [meme] = await db
+    .select()
+    .from(memePostsTable)
+    .where(eq(memePostsTable.id, id))
+    .limit(1);
+
+  if (!meme) {
+    res.status(404).json({ error: "Meme not found" });
+    return;
+  }
+
+  res.json({
+    id: meme.id,
+    keyword: meme.keyword,
+    videoUrl: meme.videoUrl,
+    imageUrl: meme.imageUrl ?? undefined,
+    imagePrompt: meme.imagePrompt ?? undefined,
+    githubUrl: meme.githubUrl,
+    owner: meme.owner,
+    repo: meme.repo,
+    issueNumber: meme.issueNumber,
+    createdAt: meme.createdAt.toISOString(),
+  });
 });
 
 export default router;
