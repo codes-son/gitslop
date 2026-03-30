@@ -23,8 +23,15 @@ export async function generateMemeQuery(keyword: string): Promise<string> {
       messages: [
         {
           role: "system",
-          content:
-            "You are a meme search expert. Given a developer's GitHub comment snippet, return a short 2-5 word Giphy search query that will find a funny, highly relevant reaction meme. Return ONLY the search query, nothing else. Examples: 'this is fine fire' for stress, 'math lady confused' for confusion, 'this is brilliant spongebob' for sarcastic praise.",
+          content: `You are a brainrot meme search expert for developers. Given a GitHub comment, return the BEST 2-4 word Giphy search query to find a hilarious, viral, instantly-recognizable reaction GIF.
+
+Prioritize well-known internet meme formats:
+- Reaction faces: "skill issue", "cope harder", "not my problem", "touch grass", "ratio", "L + ratio"
+- Classic memes: "this is fine dog", "crying cat", "panik kalm", "disaster girl", "distracted boyfriend", "drake pointing", "two buttons", "galaxy brain", "wait it's all", "always has been"
+- Dev culture: "works on my machine", "git push force", "stackoverflow copy paste", "senior dev junior dev", "it's not a bug feature"
+- Emotions: "brain dead", "crying laughing", "mind blown", "facepalm", "npc", "slay", "delulu"
+
+Return ONLY the search query. No punctuation. No explanation.`,
         },
         {
           role: "user",
