@@ -1,7 +1,12 @@
-const RUNWAY_API_BASE = "https://api.dev.runwayml.com/v1";
+const RUNWAY_API_BASE    = "https://api.dev.runwayml.com/v1";
 const RUNWAY_API_VERSION = "2024-11-06";
-const POLL_INTERVAL_MS = 5000;
-const MAX_POLL_ATTEMPTS = 36; // 3 minutes max
+const POLL_INTERVAL_MS   = 5000;
+const MAX_POLL_ATTEMPTS  = 36; // 3 minutes max
+
+// Runway promptText hard limit: 512 chars
+const RUNWAY_PROMPT_LIMIT = 512;
+const RUNWAY_MOTION_SUFFIX = " — Pixar 3D cartoon animation, smooth expressive movement, dynamic camera, vivid colors, cinematic";
+// suffix is 93 chars, leaving 419 chars for the keyword context
 
 interface RunwayTaskResponse {
   id: string;
@@ -11,11 +16,17 @@ interface RunwayTaskResponse {
   failureCode?: string;
 }
 
+function buildMotionPrompt(keyword: string): string {
+  const maxKeywordLen = RUNWAY_PROMPT_LIMIT - RUNWAY_MOTION_SUFFIX.length;
+  const kw = keyword.slice(0, maxKeywordLen);
+  return `${kw}${RUNWAY_MOTION_SUFFIX}`.slice(0, RUNWAY_PROMPT_LIMIT);
+}
+
 async function submitRunwayTask(imageDataUri: string, keyword: string): Promise<string> {
   const apiKey = process.env.RUNWAY_API_KEY;
   if (!apiKey) throw new Error("RUNWAY_API_KEY not set");
 
-  const motionPrompt = `${keyword} — cinematic motion, dynamic zoom, particle effects, vivid colors, dramatic lighting, epic movement`;
+  const promptText = buildMotionPrompt(keyword);
 
   const res = await fetch(`${RUNWAY_API_BASE}/image_to_video`, {
     method: "POST",
@@ -26,17 +37,17 @@ async function submitRunwayTask(imageDataUri: string, keyword: string): Promise<
     },
     body: JSON.stringify({
       promptImage: imageDataUri,
-      promptText: motionPrompt,
+      promptText,
       model: "gen3a_turbo",
       duration: 5,
       ratio: "1280:768",
-      seed: Math.floor(Math.random() * 1000000),
+      seed: Math.floor(Math.random() * 1_000_000),
     }),
   });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`Runway task submission failed: ${res.status} ${err}`);
+    throw new Error(`Runway submission failed: ${res.status} ${err}`);
   }
 
   const data = await res.json() as RunwayTaskResponse;
@@ -67,12 +78,12 @@ async function pollRunwayTask(taskId: string): Promise<string> {
 
     if (task.status === "SUCCEEDED") {
       const videoUrl = task.output?.[0];
-      if (!videoUrl) throw new Error("Runway succeeded but no output URL");
+      if (!videoUrl) throw new Error("Runway succeeded but returned no output URL");
       return videoUrl;
     }
 
     if (task.status === "FAILED" || task.status === "CANCELLED") {
-      throw new Error(`Runway task ${task.status}: ${task.failure ?? task.failureCode ?? "unknown error"}`);
+      throw new Error(`Runway task ${task.status}: ${task.failure ?? task.failureCode ?? "unknown"}`);
     }
   }
 
