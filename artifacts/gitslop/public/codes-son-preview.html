@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>son · builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080a0f;
+      --surface: #0e1117;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --accent: #22d3ee;
+      --accent2: #a78bfa;
+      --green: #4ade80;
+      --radius: 14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -20%, rgba(34,211,238,0.06) 0%, transparent 60%),
+        radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 100% 100%, 28px 28px;
+      background-attachment: fixed, fixed;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Nav ── */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(20px);
+      background: rgba(8,10,15,0.85);
+      z-index: 100;
+    }
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav .logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.3px;
+    }
+    nav .logo span { color: var(--muted); }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+    nav ul a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--text); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 96px 0 80px;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.2);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 28px;
+      letter-spacing: 0.5px;
+    }
+    .hero-tag .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; }
+      50% { opacity:0.4; }
+    }
+    .hero h1 {
+      font-size: clamp(42px, 8vw, 68px);
+      font-weight: 800;
+      letter-spacing: -2.5px;
+      line-height: 1.05;
+      margin-bottom: 10px;
+    }
+    .hero h1 .name { color: var(--text); }
+    .hero h1 .handle {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+    }
+    .hero-subtitle {
+      font-size: clamp(18px, 3vw, 22px);
+      color: var(--muted);
+      font-weight: 400;
+      margin-bottom: 32px;
+      max-width: 520px;
+    }
+    .hero-subtitle strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #020c10;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 12px 22px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+
+    /* ── Section ── */
+    section { padding: 64px 0; border-top: 1px solid var(--border); }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 700;
+      letter-spacing: -0.8px;
+      margin-bottom: 8px;
+    }
+    .section-desc {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 540px;
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    /* ── Building ── */
+    .build-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .build-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .build-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+    .build-card-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .build-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .build-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .build-card .tag {
+      display: inline-block;
+      margin-top: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(34,211,238,0.08);
+      color: var(--accent);
+      border: 1px solid rgba(34,211,238,0.15);
+    }
+
+    /* ── Experience ── */
+    .exp-list { display: flex; flex-direction: column; gap: 12px; }
+    .exp-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: border-color 0.2s;
+    }
+    .exp-item:hover { border-color: rgba(255,255,255,0.14); }
+    .exp-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+    }
+    .exp-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .exp-info p { font-size: 13px; color: var(--muted); }
+    .exp-years {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Featured Project ── */
+    .project-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .project-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+    .project-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.25);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent2);
+    }
+    .project-card h3 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .project-card p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      max-width: 520px;
+    }
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .tech-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+    }
+    footer p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--accent); }
+
+    @media (max-width: 560px) {
+      .hero { padding: 64px 0 52px; }
+      .project-header { flex-direction: column; }
+      nav ul { gap: 16px; }
+      .exp-item { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="logo">codes<span>-</span>son</a>
+      <ul>
+        <li><a href="#building">Building</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="https://github.com/codes-son" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-tag">
+          <span class="dot"></span>
+          available for interesting problems
+        </div>
+        <h1>
+          <div class="name">son.</div>
+          <div class="handle">@codes-son</div>
+        </h1>
+        <p class="hero-subtitle">
+          <strong>Builder</strong> — shipping blockchain tools, developer utilities,<br/>
+          and the occasional piece of beautiful nonsense.
+        </p>
+        <div class="hero-cta">
+          <a href="https://codes-son.github.io/gitslop/" class="btn-primary" target="_blank">
+            ▶ See GitSlop
+          </a>
+          <a href="https://github.com/codes-son" class="btn-secondary" target="_blank">
+            github.com/codes-son
+          </a>
+        </div>
+      </div>
+
+      <!-- Building -->
+      <section id="building">
+        <div class="section-label">// what I build</div>
+        <h2 class="section-title">Blockchain tools &amp; developer experiences</h2>
+        <p class="section-desc">
+          I build things at the intersection of blockchain infrastructure, developer tooling, and automation. If it can be scripted, it will be scripted.
+        </p>
+        <div class="build-grid">
+          <div class="build-card">
+            <div class="build-card-icon">⛓️</div>
+            <h3>Blockchain Tools</h3>
+            <p>On-chain utilities, smart contract tooling, and DeFi automation scripts that do one thing well.</p>
+            <span class="tag">solidity · web3.js · ethers</span>
+          </div>
+          <div class="build-card">
+            <div class="build-card-icon">🤖</div>
+            <h3>Developer Bots</h3>
+            <p>GitHub Apps, automation pipelines, and bots that plug into developer workflows and make life easier.</p>
+            <span class="tag">github apps · webhooks</span>
+          </div>
+          <div class="build-card">
+            <div class="build-card-icon">🧰</div>
+            <h3>Dev Utilities</h3>
+            <p>APIs, CLI tools, and small-but-sharp utilities for the developer's day-to-day toolkit.</p>
+            <span class="tag">node · typescript · postgres</span>
+          </div>
+          <div class="build-card">
+            <div class="build-card-icon">✨</div>
+            <h3>AI-Powered Stuff</h3>
+            <p>Experiments fusing LLMs with practical developer workflows — from code review to meme generation.</p>
+            <span class="tag">claude · openai · runway</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section id="experience">
+        <div class="section-label">// stack &amp; experience</div>
+        <h2 class="section-title">What I work with</h2>
+        <p class="section-desc">Years of pushing code across the blockchain and full-stack spectrum.</p>
+        <div class="exp-list">
+          <div class="exp-item">
+            <div class="exp-badge">⛓</div>
+            <div class="exp-info">
+              <h4>Blockchain &amp; Smart Contracts</h4>
+              <p>Solidity, EVM, DeFi protocols, on-chain tooling &amp; automation</p>
+            </div>
+            <span class="exp-years">core focus</span>
+          </div>
+          <div class="exp-item">
+            <div class="exp-badge">⚡</div>
+            <div class="exp-info">
+              <h4>TypeScript / Node.js</h4>
+              <p>Backend APIs, GitHub Apps, webhook processors, real-time pipelines</p>
+            </div>
+            <span class="exp-years">daily driver</span>
+          </div>
+          <div class="exp-item">
+            <div class="exp-badge">⚛️</div>
+            <div class="exp-info">
+              <h4>React &amp; Frontend</h4>
+              <p>React, Vite, Tailwind — clean UIs that get out of the way</p>
+            </div>
+            <span class="exp-years">as needed</span>
+          </div>
+          <div class="exp-item">
+            <div class="exp-badge">🧠</div>
+            <div class="exp-info">
+              <h4>AI &amp; LLM Integration</h4>
+              <p>Claude, GPT-4o, Runway — building useful products on top of foundation models</p>
+            </div>
+            <span class="exp-years">current</span>
+          </div>
+          <div class="exp-item">
+            <div class="exp-badge">🗄️</div>
+            <div class="exp-info">
+              <h4>Infrastructure</h4>
+              <p>PostgreSQL, GCS, Docker, GitHub Actions, deployment pipelines</p>
+            </div>
+            <span class="exp-years">foundation</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Projects -->
+      <section id="projects">
+        <div class="section-label">// featured project</div>
+        <h2 class="section-title">What I've shipped</h2>
+        <p class="section-desc">Things I've built and deployed into the wild.</p>
+
+        <div class="project-card">
+          <div class="project-header">
+            <div>
+              <div class="project-badge">🤖 live</div>
+            </div>
+          </div>
+          <h3>GitSlop Bot</h3>
+          <p>
+            A GitHub App bot that listens for <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;">@gitslopbot</code> mentions in Issues, PRs, and Discussions — then uses Claude to design a brainrot Pixar-style meme, generates it with GPT-image-1, animates it with Runway Gen3 Turbo, and posts a two-step response back to the thread. All automatically.
+          </p>
+          <div class="project-tech">
+            <span class="tech-pill">Claude 3.7</span>
+            <span class="tech-pill">GPT-image-1</span>
+            <span class="tech-pill">Runway Gen3</span>
+            <span class="tech-pill">GitHub Apps</span>
+            <span class="tech-pill">TypeScript</span>
+            <span class="tech-pill">PostgreSQL</span>
+            <span class="tech-pill">React</span>
+          </div>
+          <a href="https://codes-son.github.io/gitslop/" class="btn-primary" target="_blank">
+            View Gallery →
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        <a href="https://github.com/codes-son" target="_blank">github.com/codes-son</a>
+        &nbsp;·&nbsp;
+        Built by son
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
