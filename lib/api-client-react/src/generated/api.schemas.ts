@@ -12,7 +12,8 @@ export interface HealthStatus {
 export interface MemePost {
   id: number;
   keyword: string;
-  gifUrl: string;
+  videoUrl: string;
+  imagePrompt?: string;
   githubUrl: string;
   owner: string;
   repo: string;

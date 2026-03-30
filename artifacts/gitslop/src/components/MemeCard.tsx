@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
-import { Github, ExternalLink, GitMerge, MessageSquare } from "lucide-react";
+import { Github, ExternalLink, GitMerge, MessageSquare, Film } from "lucide-react";
 import type { MemePost } from "@workspace/api-client-react";
 
 interface MemeCardProps {
@@ -9,7 +9,6 @@ interface MemeCardProps {
 }
 
 export function MemeCard({ meme, index }: MemeCardProps) {
-  // Stagger animation based on index
   const delay = Math.min(index * 0.1, 1.5);
 
   return (
@@ -19,25 +18,35 @@ export function MemeCard({ meme, index }: MemeCardProps) {
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
       className="break-inside-avoid mb-6 rounded-2xl overflow-hidden glass-panel group relative flex flex-col"
     >
-      {/* Link overlay over entire card */}
-      <a 
-        href={meme.githubUrl} 
-        target="_blank" 
-        rel="noopener noreferrer" 
+      {/* Link overlay */}
+      <a
+        href={meme.githubUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="absolute inset-0 z-20"
       >
         <span className="sr-only">View on GitHub</span>
       </a>
 
-      {/* Image Container */}
+      {/* Video Container */}
       <div className="relative bg-zinc-950 overflow-hidden">
-        <img
-          src={meme.gifUrl}
-          alt={meme.keyword}
-          loading="lazy"
+        <video
+          src={meme.videoUrl}
+          autoPlay
+          loop
+          muted
+          playsInline
           className="w-full h-auto object-cover transform transition-transform duration-700 group-hover:scale-105"
         />
-        
+
+        {/* Top-left Video Badge */}
+        <div className="absolute top-3 left-3 z-30 pointer-events-none">
+          <div className="bg-black/70 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 flex items-center gap-1.5 shadow-lg">
+            <Film className="w-3 h-3 text-violet-400" />
+            <span className="text-[10px] font-bold text-violet-300 uppercase tracking-wider">AI Video</span>
+          </div>
+        </div>
+
         {/* Top-right Repo Badge */}
         <div className="absolute top-3 right-3 z-30 pointer-events-none">
           <div className="bg-black/70 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-white/10 flex items-center gap-2 shadow-lg">
@@ -50,7 +59,7 @@ export function MemeCard({ meme, index }: MemeCardProps) {
 
         {/* Hover Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-        
+
         {/* Hover Icon */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-primary/90 text-black rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 scale-75 group-hover:scale-100 transition-all duration-300 shadow-xl shadow-primary/30 pointer-events-none z-30">
           <ExternalLink className="w-5 h-5 ml-0.5" />
@@ -64,7 +73,13 @@ export function MemeCard({ meme, index }: MemeCardProps) {
             &gt; {meme.keyword}
           </h3>
         </div>
-        
+
+        {meme.imagePrompt && (
+          <p className="text-[11px] text-zinc-500 leading-relaxed line-clamp-2 italic">
+            {meme.imagePrompt}
+          </p>
+        )}
+
         <div className="flex items-center justify-between text-xs text-zinc-500 font-medium">
           <div className="flex items-center gap-1.5 text-zinc-400">
             {meme.githubUrl.includes('/pull/') ? (

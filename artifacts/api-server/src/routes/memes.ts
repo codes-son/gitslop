@@ -29,7 +29,8 @@ router.get("/memes", async (req, res) => {
     memes: memes.map((m) => ({
       id: m.id,
       keyword: m.keyword,
-      gifUrl: m.gifUrl,
+      videoUrl: m.videoUrl,
+      imagePrompt: m.imagePrompt ?? undefined,
       githubUrl: m.githubUrl,
       owner: m.owner,
       repo: m.repo,

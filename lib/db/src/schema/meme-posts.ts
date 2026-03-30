@@ -3,7 +3,8 @@ import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
 export const memePostsTable = pgTable("meme_posts", {
   id: serial("id").primaryKey(),
   keyword: text("keyword").notNull(),
-  gifUrl: text("gif_url").notNull(),
+  videoUrl: text("video_url").notNull(),
+  imagePrompt: text("image_prompt"),
   githubUrl: text("github_url").notNull(),
   owner: text("owner").notNull(),
   repo: text("repo").notNull(),
