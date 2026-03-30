@@ -45,15 +45,16 @@ function normalizePrivateKey(raw: string): string {
   return key;
 }
 
+const GALLERY_BASE = "https://codes-son.github.io/gitslop";
+
 /** Step 1 comment body — image is ready, video is cooking */
-function buildImageReadyComment(imageUrl: string, keyword: string, imagePrompt: string): string {
+function buildImageReadyComment(imageUrl: string, keyword: string): string {
   return [
     `🔥 **yo, ur brainrot meme just got cooked up no cap**`,
     ``,
     `![meme](${imageUrl})`,
     ``,
     `> *"${keyword}"*`,
-    `> 🎨 *Prompt: ${imagePrompt}*`,
     ``,
     `---`,
     `⏳ **Runway is animating this bad boy rn... gimme like a minute fr fr** 🎬`,
@@ -62,16 +63,16 @@ function buildImageReadyComment(imageUrl: string, keyword: string, imagePrompt: 
 }
 
 /** Step 2 comment body — video is ready, update the same comment */
-function buildVideoReadyComment(imageUrl: string, videoUrl: string, keyword: string, imagePrompt: string): string {
+function buildVideoReadyComment(imageUrl: string, memeId: number, keyword: string): string {
+  const slopUrl = `${GALLERY_BASE}/slop/${memeId}`;
   return [
     `🎬 **no cap this video just dropped and it goes HARD 💀🔥**`,
     ``,
-    `**[▶ WATCH THIS SLOP RIGHT NOW](${videoUrl})**`,
+    `**[▶ WATCH THIS SLOP RIGHT NOW](${slopUrl})**`,
     ``,
     `![still](${imageUrl})`,
     ``,
     `> *"${keyword}"*`,
-    `> 🎨 *Prompt: ${imagePrompt}*`,
     ``,
     `---`,
     `*Cooked by [@gitslopbot](https://github.com/apps/gitslopbot) • not my fault ur eyes can't unsee this*`,
@@ -146,7 +147,7 @@ async function processMemeInBackground(opts: {
 
   try {
     const installationToken = await getInstallationToken(appId, privateKey, installationId);
-    const step1Body = buildImageReadyComment(imageUrl, keyword, imagePrompt);
+    const step1Body = buildImageReadyComment(imageUrl, keyword);
     if (isDiscussion && discussionNodeId) {
       const nodeId = await postDiscussionCommentAndGetId(installationToken, discussionNodeId, step1Body);
       commentRef = { type: "discussion", nodeId };
@@ -169,51 +170,11 @@ async function processMemeInBackground(opts: {
     logger.error({ err, keyword }, "Runway animation failed");
   }
 
-  // ── Step 5: Update comment with video (or post new one if we didn't get ref) ─
-  let freshToken: string;
-  try {
-    freshToken = await getInstallationToken(appId, privateKey, installationId);
-  } catch (err) {
-    logger.error({ err }, "Step 5: Failed to get installation token for final comment");
-    // Still save to DB even if we can't post
-    if (videoUrl) {
-      try {
-        await db.insert(memePostsTable).values({ keyword, videoUrl, imageUrl: imageUrl || null, imagePrompt, githubUrl, owner, repo, issueNumber });
-      } catch (dbErr) { logger.warn({ dbErr }, "Failed to save meme to DB"); }
-    }
-    return;
-  }
-
-  try {
-    const finalBody = videoUrl
-      ? buildVideoReadyComment(imageUrl, videoUrl, keyword, imagePrompt)
-      : buildFailureComment(keyword);
-
-    if (commentRef) {
-      // Update the existing comment in-place
-      if (commentRef.type === "issue") {
-        await updateIssueComment(freshToken, owner, repo, commentRef.id, finalBody);
-      } else {
-        await updateDiscussionComment(freshToken, commentRef.nodeId, finalBody);
-      }
-      logger.info({ keyword, hasVideo: !!videoUrl }, "Step 5: Updated comment with video");
-    } else {
-      // Fallback: post a new comment if step 3 failed
-      if (isDiscussion && discussionNodeId) {
-        await postDiscussionCommentAndGetId(freshToken, discussionNodeId, finalBody);
-      } else {
-        await postIssueCommentAndGetId(freshToken, owner, repo, issueNumber, finalBody);
-      }
-      logger.info({ keyword, hasVideo: !!videoUrl }, "Step 5: Posted new comment (fallback)");
-    }
-  } catch (err) {
-    logger.error({ err }, "Failed to update/post final GitHub comment");
-  }
-
-  // ── Step 6: Save to DB ────────────────────────────────────────────────────
+  // ── Step 5: Save to DB and get meme ID ───────────────────────────────────
+  let memeId: number | null = null;
   if (videoUrl) {
     try {
-      await db.insert(memePostsTable).values({
+      const [inserted] = await db.insert(memePostsTable).values({
         keyword,
         videoUrl,
         imageUrl: imageUrl || null,
@@ -222,11 +183,45 @@ async function processMemeInBackground(opts: {
         owner,
         repo,
         issueNumber,
-      });
-      logger.info({ keyword }, "Saved meme to DB");
+      }).returning({ id: memePostsTable.id });
+      memeId = inserted?.id ?? null;
+      logger.info({ keyword, memeId }, "Step 5: Saved meme to DB");
     } catch (err) {
       logger.warn({ err }, "Failed to save meme post to DB");
     }
+  }
+
+  // ── Step 6: Update comment with video (or post new one if we didn't get ref) ─
+  let freshToken: string;
+  try {
+    freshToken = await getInstallationToken(appId, privateKey, installationId);
+  } catch (err) {
+    logger.error({ err }, "Step 6: Failed to get installation token for final comment");
+    return;
+  }
+
+  try {
+    const finalBody = videoUrl && memeId
+      ? buildVideoReadyComment(imageUrl, memeId, keyword)
+      : buildFailureComment(keyword);
+
+    if (commentRef) {
+      if (commentRef.type === "issue") {
+        await updateIssueComment(freshToken, owner, repo, commentRef.id, finalBody);
+      } else {
+        await updateDiscussionComment(freshToken, commentRef.nodeId, finalBody);
+      }
+      logger.info({ keyword, hasVideo: !!videoUrl, memeId }, "Step 6: Updated comment with video");
+    } else {
+      if (isDiscussion && discussionNodeId) {
+        await postDiscussionCommentAndGetId(freshToken, discussionNodeId, finalBody);
+      } else {
+        await postIssueCommentAndGetId(freshToken, owner, repo, issueNumber, finalBody);
+      }
+      logger.info({ keyword, hasVideo: !!videoUrl }, "Step 6: Posted new comment (fallback)");
+    }
+  } catch (err) {
+    logger.error({ err }, "Failed to update/post final GitHub comment");
   }
 }
 
