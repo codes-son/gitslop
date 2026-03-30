@@ -1,32 +1,48 @@
 interface MemeConceptJson {
-  animal: string;
+  body: string;
+  gender: "girl" | "man" | "neutral";
   activity: string;
   background: string;
   memeText: string;
 }
 
-const FALLBACK_ANIMALS = ["golden retriever", "cat", "frog", "raccoon", "capybara", "penguin", "hamster"];
+const FALLBACK_BODIES = [
+  "golden retriever", "cat", "frog", "raccoon", "capybara", "penguin",
+  "broccoli", "carrot", "strawberry", "banana", "cactus", "pineapple",
+];
 
 function fallbackConcept(keyword: string): MemeConceptJson {
-  const animal = FALLBACK_ANIMALS[Math.floor(Math.random() * FALLBACK_ANIMALS.length)];
+  const body = FALLBACK_BODIES[Math.floor(Math.random() * FALLBACK_BODIES.length)];
+  const gender = detectGender(keyword);
   return {
-    animal,
+    body,
+    gender,
     activity: `frantically dealing with "${keyword.slice(0, 40)}"`,
     background: "exploding server room with rainbow confetti",
     memeText: keyword.slice(0, 25).toUpperCase(),
   };
 }
 
+function detectGender(text: string): "girl" | "man" | "neutral" {
+  const lower = text.toLowerCase();
+  if (/\b(girl|woman|female|cewek|wanita|perempuan)\b/.test(lower)) return "girl";
+  if (/\b(man|boy|male|cowok|pria|laki)\b/.test(lower)) return "man";
+  return "neutral";
+}
+
 function composeDallePrompt(c: MemeConceptJson): string {
-  // Budget: animal ≤20, activity ≤80, background ≤80, memeText ≤28
-  // Total target: ~420 chars, well under DALL-E 3 limit of 4000
-  const animal     = c.animal.slice(0, 20);
+  const body       = c.body.slice(0, 20);
   const activity   = c.activity.slice(0, 80);
   const background = c.background.slice(0, 80);
   const memeText   = c.memeText.slice(0, 28).toUpperCase();
 
+  const hairDesc =
+    c.gender === "girl"    ? "long flowing hair, feminine features," :
+    c.gender === "man"     ? "short hair, masculine features," :
+    /* neutral */            "";
+
   return [
-    `3D Pixar-style cartoon meme: expressive human face on ${animal} humanoid body, ${activity}.`,
+    `3D Pixar-style cartoon meme: expressive human face ${hairDesc} on ${body} humanoid body, ${activity}.`,
     `Background: ${background}.`,
     `Large bold white bubble letters at the top read "${memeText}".`,
     `Small text "github.com/apps/gitslopbot" bottom-right corner.`,
@@ -40,6 +56,8 @@ async function generateMemeConcept(keyword: string): Promise<MemeConceptJson> {
 
   if (!baseURL || !apiKey) return fallbackConcept(keyword);
 
+  const detectedGender = detectGender(keyword);
+
   try {
     const res = await fetch(`${baseURL}/messages`, {
       method: "POST",
@@ -50,22 +68,24 @@ async function generateMemeConcept(keyword: string): Promise<MemeConceptJson> {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5",
-        max_tokens: 200,
-        system: `You create DALL-E image concepts for 3D cartoon memes. Return ONLY valid JSON, no other text.
+        max_tokens: 220,
+        system: `You create image concepts for 3D Pixar cartoon memes. Return ONLY valid JSON, no other text.
 
-Schema (strict char limits to keep DALL-E prompt short):
+Schema (strict char limits):
 {
-  "animal": "<animal species, max 20 chars>",
-  "activity": "<what the character is doing related to user context, max 80 chars>",
-  "background": "<wild fun brainrot/slop scene, max 80 chars>",
+  "body": "<animal OR plant/vegetable/fruit/tree species, max 20 chars>",
+  "gender": "<"girl" | "man" | "neutral" — infer from user text>",
+  "activity": "<what the character is doing related to context, max 80 chars>",
+  "background": "<wild chaotic colorful brainrot scene, max 80 chars>",
   "memeText": "<short punchy ALL-CAPS caption, max 28 chars>"
 }
 
 Rules:
-- animal: pick a funny/random animal that fits the vibe
-- activity: humanoid pose, action matches user's context
-- background: chaotic, colorful, absurd — offices exploding, space disco, rainbow chaos, etc
-- memeText: 2-5 words max, punchy internet meme energy
+- body: pick a funny/unique body — can be an animal (cat, frog, raccoon, capybara, penguin) OR a plant/vegetable/fruit/tree (broccoli, carrot, strawberry, banana, cactus, pineapple, oak tree, chili pepper). Mix it up, avoid repetition.
+- gender: if user mentions girl/woman/cewek/wanita → "girl"; man/boy/cowok/pria → "man"; otherwise "neutral"
+- activity: humanoid pose, action matches user context
+- background: chaotic, colorful, absurd — space disco, offices exploding, rainbow chaos, underwater rave, etc
+- memeText: 2–5 words, punchy internet meme energy
 - Output ONLY the JSON object, nothing else`,
         messages: [{ role: "user", content: keyword }],
       }),
@@ -80,12 +100,19 @@ Rules:
     if (!jsonMatch) return fallbackConcept(keyword);
 
     const parsed = JSON.parse(jsonMatch[0]) as Partial<MemeConceptJson>;
-    if (!parsed.animal || !parsed.activity || !parsed.background || !parsed.memeText) {
+    if (!parsed.body || !parsed.activity || !parsed.background || !parsed.memeText) {
       return fallbackConcept(keyword);
     }
 
+    const rawGender = String(parsed.gender ?? "").toLowerCase();
+    const gender: MemeConceptJson["gender"] =
+      rawGender === "girl" ? "girl" :
+      rawGender === "man"  ? "man"  :
+      detectedGender;  // fall back to our own detection
+
     return {
-      animal:     String(parsed.animal).slice(0, 20),
+      body:       String(parsed.body).slice(0, 20),
+      gender,
       activity:   String(parsed.activity).slice(0, 80),
       background: String(parsed.background).slice(0, 80),
       memeText:   String(parsed.memeText).slice(0, 28),
@@ -99,7 +126,6 @@ export async function generateMemeImage(keyword: string): Promise<{ imageBase64:
   const concept     = await generateMemeConcept(keyword);
   const imagePrompt = composeDallePrompt(concept);
 
-  // Safety check: DALL-E 3 hard limit is 4000 chars
   const safePrompt = imagePrompt.slice(0, 3900);
 
   const baseURL = process.env.AI_INTEGRATIONS_OPENAI_BASE_URL;
@@ -132,6 +158,6 @@ export async function generateMemeImage(keyword: string): Promise<{ imageBase64:
 
   return {
     imageBase64: `data:image/png;base64,${b64}`,
-    imagePrompt: `${concept.memeText} — ${concept.animal} ${concept.activity}`,
+    imagePrompt: `${concept.memeText} — ${concept.gender !== "neutral" ? concept.gender + " " : ""}${concept.body} ${concept.activity}`,
   };
 }

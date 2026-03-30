@@ -6,3 +6,15 @@ id = "yExZCIDQbqGfURVURWhgD"
 uri = "file://screenshots/meme-test.png"
 type = "image"
 title = "Test: anime girl bitcoin → gpt-image-1"
+
+[[outputs]]
+id = "QyN1yQPtneRSD_l7xg2SI"
+uri = "file://screenshots/test-girl.png"
+type = "image"
+title = "Girl: cat body, rambut panjang — HODL TILL THE MOON"
+
+[[outputs]]
+id = "kb_QtUDRpwNl0HV8sNtGt"
+uri = "file://screenshots/test-man.png"
+type = "image"
+title = "Man: owl body, rambut pendek — STILL DEBUGGING AT 3AM"
